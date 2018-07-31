@@ -2,14 +2,13 @@
   text-align: center;
   min-height: 100vh;
   display: grid;
+  grid-template-rows: auto auto auto;
   grid-template-areas: 
     "header" 
     "main" 
     "footer";
-  grid-template-rows: auto auto auto;
+  
 }
-
-
 
 .App-header {
   grid-area: header;
@@ -17,9 +16,57 @@
 
 .App-main {
   grid-area: main;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas:
+    ". . ."
+    ". calculator ."
+    ". . .";
 }
 
 .App-footer {
   grid-area: footer;
+}
+
+#calculator {
+  grid-area: calculator;
+  display: grid;
+  grid-template-rows: repeat(6, 60px);
+  grid-template-columns: repeat(4, 60px);
+  grid-gap: 5px;
+  padding: 20px;
+  background-color: ivory;
+  border-radius: 20px;
+  box-shadow: inset -5px 5px 10px 0px rgba(255,255,255,1), inset 5px -5px 10px 0px rgba(0,0,0,.5);
+  -webkit-box-shadow: inset -5px 5px 10px 0px rgba(255,255,255,1), inset 5px -5px 10px 0px rgba(0,0,0,.5);
+  -moz-box-shadow: inset -5px 5px 10px 0px rgba(255,255,255,1), inset 5px -5px 10px 0px rgba(0,0,0,.5);
+}
+
+.calckey {
+  display: grid;
+  background-color: gray;
+  border: 1px black solid;
+  align-items: center;
+  justify-items: center;
+  border-radius: 5px;
+  box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5);
+  -webkit-box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5);
+  -moz-box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5);
+}
+
+#display {
+  grid-column-end: span 4;
+  background-color: #404040;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+#zero {
+  grid-column-end: span 2;
+}
+
+#clear, #equals {
+  grid-row-end: span 2;
 }
 
