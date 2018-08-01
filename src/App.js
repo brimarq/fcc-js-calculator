@@ -55,15 +55,17 @@ class Calculator extends Component {
       <div id="calculator">
 
         <Display />
-
-        { calcKeys.map(calcKey => (
-          <CalcKey 
-            key={calcKey.id} 
-            id={calcKey.id} 
-            face={calcKey.face} 
-            value={calcKey.value} 
-          />
-        ))}
+        <div id="keypad">
+          { calcKeys.map(calcKey => (
+            <CalcKey 
+              key={calcKey.id} 
+              id={calcKey.id} 
+              face={calcKey.face} 
+              value={calcKey.value} 
+            />
+          ))}
+        </div>
+        
 
       </div>
     );
