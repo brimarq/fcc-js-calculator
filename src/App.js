@@ -34,12 +34,32 @@ const calcKeys = [
 ]
 
 class CalcKey extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      calcKeyClassName: this.props.defaultClassName,
+    }
+    this.handleClick = this.handleClick.bind(this);
+    this.setCalcKeyClassName = this.setCalcKeyClassName.bind(this);
+  }
+
+  setCalcKeyClassName(str) {
+    this.setState(() => ({calcKeyClassName: str}));
+  }
+  
+  handleClick() {
+    this.setCalcKeyClassName(this.props.clickedClassName);
+    setTimeout(this.setCalcKeyClassName, 80, this.props.defaultClassName);
+  }
+
   render() {
     return (
-      <div id={this.props.id} className="calckey">{this.props.face}</div>
+      <div id={this.props.id} className={this.state.calcKeyClassName} onClick={this.handleClick}>{this.props.face}</div>
     );
   }
+
 }
+
 
 class Display extends Component {
   render() {
@@ -50,6 +70,12 @@ class Display extends Component {
 }
 
 class Calculator extends Component {
+  constructor(props) {
+    super(props);
+
+  }
+
+  
   render() {
     return (
       <div id="calculator">
@@ -62,6 +88,8 @@ class Calculator extends Component {
               id={calcKey.id} 
               face={calcKey.face} 
               value={calcKey.value} 
+              defaultClassName="calckey"
+              clickedClassName="calckey calckey-clicked"
             />
           ))}
         </div>

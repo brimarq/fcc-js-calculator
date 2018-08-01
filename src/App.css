@@ -64,14 +64,25 @@
 }
 
 .calckey {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
   background-color: gray;
   border: 1px black solid;
   align-items: center;
   line-height: var(--calckey-size);
   border-radius: 5px;
+  cursor: pointer;
   box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5);
   -webkit-box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5);
   -moz-box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5);
+}
+
+.calckey.calckey-clicked {
+  box-shadow: inset -2px 2px 5px 0px rgba(0,0,0,.5), inset 2px -2px 5px 0px rgba(255,255,255,.5);
+  -webkit-box-shadow: inset -2px 2px 5px 0px rgba(0,0,0,.5), inset 2px -2px 5px 0px rgba(255,255,255,.5);
+  -moz-box-shadow: inset -2px 2px 5px 0px rgba(0,0,0,.5), inset 2px -2px 5px 0px rgba(255,255,255,.5);
 }
 
 #zero {
