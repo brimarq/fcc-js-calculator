@@ -50,6 +50,7 @@ class CalcKey extends Component {
   handleClick() {
     this.setCalcKeyClassName(this.props.clickedClassName);
     setTimeout(this.setCalcKeyClassName, 80, this.props.defaultClassName);
+    this.props.collectInput(this.props.value);
   }
 
   render() {
@@ -64,7 +65,7 @@ class CalcKey extends Component {
 class Display extends Component {
   render() {
     return (
-      <div id="display">display</div>
+      <div id="display">{this.props.display}</div>
     );
   }
 }
@@ -72,15 +73,29 @@ class Display extends Component {
 class Calculator extends Component {
   constructor(props) {
     super(props);
-
+    this.state = {
+      display: "0",
+      input: "",
+    };
+    this.setDisplay = this.setDisplay.bind(this);
+    this.collectInput = this.collectInput.bind(this);
   }
 
-  
+  setDisplay(str) {
+    this.setState(() => ({display: str}));
+  }
+
+  collectInput(str) {
+    this.setState((prevState) => ({input: prevState.input.concat(str)}));
+  }
+
   render() {
     return (
       <div id="calculator">
 
-        <Display />
+        <Display 
+          display={this.state.display} 
+        />
         <div id="keypad">
           { calcKeys.map(calcKey => (
             <CalcKey 
@@ -89,7 +104,9 @@ class Calculator extends Component {
               face={calcKey.face} 
               value={calcKey.value} 
               defaultClassName="calckey"
-              clickedClassName="calckey calckey-clicked"
+              clickedClassName="calckey calckey-clicked" 
+              setDisplay={this.setDisplay} 
+              collectInput={this.collectInput} 
             />
           ))}
         </div>
