@@ -14,23 +14,23 @@ import './App.css';
 // Unicode: U+2212, UTF-8: E2 88 92
 
 const calcKeys = [
-  { id: "multiply", face: "×", value: "*" },
-  { id: "divide", face: "÷", value: "/" },
-  { id: "add", face: "+", value: "+" },
-  { id: "subtract", face: "−", value: "-" },
-  { id: "seven", face: "7", value: "7" },
-  { id: "eight", face: "8", value: "8" },
-  { id: "nine", face: "9", value: "9" },
-  { id: "clear", face: "AC", value: "?" },
-  { id: "four", face: "4", value: "4" },
-  { id: "five", face: "5", value: "5" },
-  { id: "six", face: "6", value: "6" },
-  { id: "one", face: "1", value: "1" },
-  { id: "two", face: "2", value: "2" },
-  { id: "three", face: "3", value: "3" },
-  { id: "equals", face: "=", value: "=" },
-  { id: "zero", face: "0", value: "0" },
-  { id: "decimal", face: ".", value: "." }
+  { id: "multiply", face: "×", value: "*", group: "operator" },
+  { id: "divide", face: "÷", value: "/", group: "operator" },
+  { id: "add", face: "+", value: "+", group: "operator" },
+  { id: "subtract", face: "−", value: "-", group: "operator" },
+  { id: "seven", face: "7", value: "7", group: "number" },
+  { id: "eight", face: "8", value: "8", group: "number" },
+  { id: "nine", face: "9", value: "9", group: "number" },
+  { id: "clear", face: "AC", value: "AC", group: "?" },
+  { id: "four", face: "4", value: "4", group: "number" },
+  { id: "five", face: "5", value: "5", group: "number" },
+  { id: "six", face: "6", value: "6", group: "number" },
+  { id: "one", face: "1", value: "1", group: "number" },
+  { id: "two", face: "2", value: "2", group: "number" },
+  { id: "three", face: "3", value: "3", group: "number" },
+  { id: "equals", face: "=", value: "=", group: "?" },
+  { id: "zero", face: "0", value: "0", group: "number" },
+  { id: "decimal", face: ".", value: ".", group: "number" }
 ]
 
 class CalcKey extends Component {
@@ -50,7 +50,7 @@ class CalcKey extends Component {
   handleClick() {
     this.setCalcKeyClassName(this.props.clickedClassName);
     setTimeout(this.setCalcKeyClassName, 80, this.props.defaultClassName);
-    this.props.collectInput(this.props.value);
+    this.props.collectInput(this.props.id, this.props.value, this.props.group);
   }
 
   render() {
@@ -85,8 +85,35 @@ class Calculator extends Component {
     this.setState(() => ({display: str}));
   }
 
-  collectInput(str) {
-    this.setState((prevState) => ({input: prevState.input.concat(str)}));
+  collectInput(keyId, keyVal, keyGrp) {
+
+    // const inputSwitch = (keyInput) => ({
+    //   'AC': this.setState(() => ({ display: "0", input: "" })),
+    //   '.'
+    // });
+
+    if (keyGrp === "number") {
+      // return early to prevent multiple zeroes at beginning of numbers (US#10)
+      if (keyId === "zero" && this.state.display === "0") return;
+      // return early if number already contains a decimal point (US#11)
+      if (keyId === "decimal" && this.state.display.includes(keyVal)) return;
+      
+      this.setState((prevState) => ({
+        // Allow decimal points to concatenate initial zero on display instead of replacing it, otherwise concat new characters.
+        display: prevState.display === "0" && keyId !== "decimal" ? keyVal : prevState.display.concat(keyVal),
+        input: prevState.input.concat(keyVal)
+      }));
+
+    }
+    else if (keyGrp === "operator") {
+      return;
+    }
+    else {
+      if (keyId === "clear") {
+        this.setState(() => ({ display: "0", input: "" }));
+      }
+    }
+
   }
 
   render() {
@@ -103,6 +130,7 @@ class Calculator extends Component {
               id={calcKey.id} 
               face={calcKey.face} 
               value={calcKey.value} 
+              group={calcKey.group}
               defaultClassName="calckey"
               clickedClassName="calckey calckey-clicked" 
               setDisplay={this.setDisplay} 
