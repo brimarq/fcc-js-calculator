@@ -76,103 +76,144 @@ class Calculator extends Component {
     this.state = {
       display: "0",
       input: [],
-      operator: "",
-      lastKeyGrpClicked: ""
+      inputLog: [],
+      lastInput: 0,
+      lastOperator: "",
+      lastKeyGrp: "",
+      subtotal: null,
     };
     this.setDisplay = this.setDisplay.bind(this);
     this.collectInput = this.collectInput.bind(this);
-    this.calculateInput = this.calculateInput.bind(this);
   }
 
   setDisplay(str) {
     this.setState(() => ({display: str}));
   }
 
-  calculateInput(input, operator) {
-    const reducer = {
-      'multiply': (accumulator, currentValue) => accumulator * currentValue, 
-      'divide': (accumulator, currentValue) => accumulator / currentValue, 
-      'add': (accumulator, currentValue) => accumulator + currentValue, 
-      'subtract': (accumulator, currentValue) => accumulator - currentValue,
-    };
-    let result = input.reduce(reducer[operator]);
-  }
-
   collectInput(keyId, keyVal, keyGrp) {
+    let inputVal;
 
-    // const inputSwitch = (keyInput) => ({
-    //   'AC': this.setState(() => ({ display: "0", input: "" })),
-    //   '.'
-    // });
-
-    if (keyGrp === "number") {
-      // return early to prevent multiple zeroes at beginning of numbers (US#10)
-      if (keyId === "zero" && this.state.display === "0") return;
-      // return early if number already contains a decimal point (US#11)
-      if (keyId === "decimal" && this.state.display.includes(keyVal)) return;
-
-      // Operator last clicked before this? Replace display with new input character, prefixing with "0" if decimal
-      if (this.state.lastKeyGrpClicked === "operator") {
-        this.setState(() => ({
-          display: keyId !== "decimal" ? keyVal : "0" + keyVal, 
-          lastKeyGrpClicked: keyGrp
-        }));
+    const calculate = (operand1, operand2, operator) => {
+      let result;
+      const reducer = {
+        'multiply': (accumulator, currentValue) => accumulator * currentValue, 
+        'divide': (accumulator, currentValue) => accumulator / currentValue, 
+        'add': (accumulator, currentValue) => accumulator + currentValue, 
+        'subtract': (accumulator, currentValue) => accumulator - currentValue,
+      };
+      if (operator === "divide" && operand2 === 0) {
+        result = "err";
       }
       else {
-        this.setState((prevState) => ({
-          // Allow decimal points to concatenate initial zero on display instead of replacing it, otherwise concat new characters.
-          display: prevState.display === "0" && keyId !== "decimal" ? keyVal : prevState.display.concat(keyVal), 
-          lastKeyGrpClicked: keyGrp
-        })); 
+        result = [operand1, operand2].reduce(reducer[operator]);
       }
+      return result;
+    };
+
+    const calculateInput = () => {
+      let operand1, operand2, operator, nextOperator;
+      if (this.state.input.length < 4) {
+        return;
+      }
+      else {
+        if (keyGrp === "operator") {
+          operand1 = this.state.input[0];
+          operator = this.state.input[1];
+          operand2 = this.state.input[2];
+          nextOperator = this.state.input[3];
+        }
+        else {
+          operand1 = this.state.input[0];
+          operator = this.state.input[1];
+          operand2 = this.state.input[2];
+          nextOperator = this.state.lastOperator;
+        }
+
+        this.setState({
+          display: calculate(operand1, operand2, operator).toString(),
+          input: [calculate(operand1, operand2, operator), nextOperator],
+          lastInput: operand2
+        });
+      }
+
+    };
+
+    if (keyGrp === "number") {
+
+      // return early to prevent multiple zeroes at beginning of numbers (US#10)
+      if (keyId === "zero" && this.state.display === "0") return; 
+      if (keyId === "decimal") {
+        // return early if number already contains a decimal point (US#11)
+        if (this.state.lastKeyGrp === "number" && this.state.display.includes(keyVal)) {
+          return;
+        }
+        // if display shows "0" or this click happens after an operator key is pressed, the decimal is prefixed with a "0"
+        else if (this.state.display === "0" || this.state.lastKeyGrp === "operator") {
+          inputVal = "0" + keyVal;
+        }
+        // otherwise, input just the decimal
+        else {
+          inputVal = keyVal;
+        }
+      }
+      // for the actual numbers, just input the value
+      else {
+        inputVal = keyVal;
+      }
+
+      this.setState((prevState) => ({
+        // if display reads "0" or this click is after an operator, replace display content, otherwise concat.
+        display: prevState.display === "0" || prevState.lastKeyGrp === "operator" ? inputVal : prevState.display.concat(inputVal), 
+        // input: prevState.input.length === "0" ? prevState.input.concat(inputVal) : prevState.input.push(inputVal), 
+        lastKeyGrp: keyGrp,
+        })
+      );
     }
 
     else if (keyGrp === "operator") {
+      
       // Consecutive operator key clicks? Just update the operator state.
-      if (this.state.lastKeyGrpClicked === "operator") {
-        this.setState(() => ({
-          operator: keyId, 
-        }));
+      if (this.state.lastKeyGrp === "operator") {
+        this.setState({ lastOperator: keyId });
       }
       else {
         
         this.setState((prevState) => ({ 
-          input: prevState.input.concat([ Number(prevState.display) ]),
-          operator: keyId, 
-          lastKeyGrpClicked: keyGrp, 
-        }));
+          // display: calculateInput([ operand1, operand2 ], operator).toString(),
+          input: prevState.input.concat([Number(prevState.display), keyId]),
+          inputLog: prevState.inputLog.concat([Number(prevState.display), keyId]),
+          lastInput: Number(prevState.display),
+          lastOperator: keyId, 
+          lastKeyGrp: keyGrp, 
+          // subtotal: calculateInput([ operand1, operand2 ], operator)
+          }),
+          () => calculateInput()
+        );
       }
-
-      // // No pervious operator set? Set it and update input state. 
-      // if (!this.state.operator) {
-      //   this.setState((prevState) => ({ 
-      //     input: prevState.input.concat([prevState.display]),
-      //     operator: keyId, 
-      //     lastKeyGrpClicked: keyGrp
-      //   }));
-      // }
-      // // Operator already chosen. 
-      // else {
-      //   // Input state array not full? Just update the operator state. 
-      //   if (this.state.input.length < 2) {
-      //     this.setState(() => ({
-      //       operator: keyId, 
-      //       lastKeyGrpClicked: keyGrp
-      //     }));
-      //   }
-      //   // Input state is full (=== 2). Calculate and display result.
-      //   else {
-      //     return;
-      //   }
-      // }
     }
 
     else {
       if (keyId === "clear") {
-        this.setState(() => ({ display: "0", input: [], operator: "", lastKeyGrpClicked: keyGrp }));
+        this.setState(() => ({ display: "0", input: [], inputLog: [], lastInput: 0, lastOperator: "", lastKeyGrp: keyGrp, subtotal: null }));
       }
       else {
         console.log("Equals key pressed.");
+
+        this.setState((prevState) => ({
+          input: prevState.input.concat([Number(prevState.display), prevState.lastOperator]),
+          inputLog: prevState.inputLog.concat([Number(prevState.display), prevState.lastOperator]),
+          lastInput: Number(prevState.display),
+          lastKeyGrp: keyGrp,
+          }),
+          () => calculateInput()
+        );
+
+        // Can this work to update state in two stages with a callback?
+        // this.setState((prevState) => ({
+        //   // obj literal
+        // }), (prevState) => ({
+        //   // obj literal
+        // }));
       }
     }
 
