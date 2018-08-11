@@ -76,10 +76,12 @@ class Calculator extends Component {
     this.state = {
       display: "0",
       input: [],
+      inputBuffer: [],
       inputLog: [],
       lastInput: 0,
       lastOperator: "",
       lastKeyGrp: "",
+      lastKeyId: "",
       subtotal: null,
     };
     this.setDisplay = this.setDisplay.bind(this);
@@ -91,7 +93,7 @@ class Calculator extends Component {
   }
 
   collectInput(keyId, keyVal, keyGrp) {
-    let inputVal;
+    
 
     const calculate = (operand1, operand2, operator) => {
       let result;
@@ -112,6 +114,7 @@ class Calculator extends Component {
 
     const calculateInput = () => {
       let operand1, operand2, operator, nextOperator;
+      // Do nothing unless the input array length is at least 4
       if (this.state.input.length < 4) {
         return;
       }
@@ -139,35 +142,59 @@ class Calculator extends Component {
     };
 
     if (keyGrp === "number") {
+      let inputVal = keyVal;
+      
+      const updateDisplay = () => {
+        let numStr = this.state.inputBuffer.join('');
+        this.setState({display: numStr});
+      }
 
-      // return early to prevent multiple zeroes at beginning of numbers (US#10)
-      if (keyId === "zero" && this.state.display === "0") return; 
+      // Return early to prevent multiple zeroes at beginning of numbers (US#10)
+      if (keyId === "zero" && this.state.inputBuffer.length === 1 && this.state.inputBuffer[0] === "0") return;
       if (keyId === "decimal") {
-        // return early if number already contains a decimal point (US#11)
-        if (this.state.lastKeyGrp === "number" && this.state.display.includes(keyVal)) {
-          return;
-        }
-        // if display shows "0" or this click happens after an operator key is pressed, the decimal is prefixed with a "0"
-        else if (this.state.display === "0" || this.state.lastKeyGrp === "operator") {
-          inputVal = "0" + keyVal;
-        }
-        // otherwise, input just the decimal
-        else {
-          inputVal = keyVal;
+        // Return early if number already contains a decimal point (US#11)
+        if (this.state.inputBuffer.includes(keyVal)) return;
+        // Prefix initial decimals with a "0"
+        if (this.state.inputBuffer.length === 0) {
+          inputVal = ["0", keyVal];
         }
       }
-      // for the actual numbers, just input the value
-      else {
-        inputVal = keyVal;
-      }
+    
 
       this.setState((prevState) => ({
-        // if display reads "0" or this click is after an operator, replace display content, otherwise concat.
-        display: prevState.display === "0" || prevState.lastKeyGrp === "operator" ? inputVal : prevState.display.concat(inputVal), 
-        // input: prevState.input.length === "0" ? prevState.input.concat(inputVal) : prevState.input.push(inputVal), 
-        lastKeyGrp: keyGrp,
-        })
+          inputBuffer: prevState.inputBuffer.concat(inputVal)
+        }),
+        () => updateDisplay()
       );
+
+      // // return early to prevent multiple zeroes at beginning of numbers (US#10)
+      // if (keyId === "zero" && this.state.display === "0") return; 
+      // if (keyId === "decimal") {
+      //   // return early if number already contains a decimal point (US#11)
+      //   if (this.state.lastKeyGrp === "number" && this.state.display.includes(keyVal)) {
+      //     return;
+      //   }
+      //   // if display shows "0" or this click happens after an operator key is pressed, the decimal is prefixed with a "0"
+      //   else if (this.state.display === "0" || this.state.lastKeyGrp === "operator") {
+      //     inputVal = "0" + keyVal;
+      //   }
+      //   // otherwise, input just the decimal
+      //   else {
+      //     inputVal = keyVal;
+      //   }
+      // }
+      // // for the actual numbers, just input the value
+      // else {
+      //   inputVal = keyVal;
+      // }
+
+      // this.setState((prevState) => ({
+      //   // if display reads "0" or this click is after an operator, replace display content, otherwise concat.
+      //   display: prevState.display === "0" || prevState.lastKeyGrp === "operator" ? inputVal : prevState.display.concat(inputVal), 
+      //   // input: prevState.input.length === "0" ? prevState.input.concat(inputVal) : prevState.input.push(inputVal), 
+      //   lastKeyGrp: keyGrp,
+      //   })
+      // );
     }
 
     else if (keyGrp === "operator") {
@@ -194,7 +221,7 @@ class Calculator extends Component {
 
     else {
       if (keyId === "clear") {
-        this.setState(() => ({ display: "0", input: [], inputLog: [], lastInput: 0, lastOperator: "", lastKeyGrp: keyGrp, subtotal: null }));
+        this.setState(() => ({ display: "0", input: [], inputBuffer: [], inputLog: [], lastInput: 0, lastOperator: "", lastKeyGrp: keyGrp, subtotal: null }));
       }
       else {
         console.log("Equals key pressed.");
