@@ -35,17 +35,12 @@ const calcKeys = [
 
 const defaultCalculatorState = {
   display: "0",
-  input: [],
   inputBuffer: [],
-  inputLog: [],
   lastInput: 0,
   lastOperator: "",
-  lastKeyGrp: "",
-  lastKeyId: "",
   isLastKeyEquals: false,
   isLastKeyOperator: false,
   operands: [],
-  subtotal: null,
 };
 
 class CalcKey extends Component {
@@ -132,7 +127,6 @@ class Calculator extends Component {
             inputBuffer: [].concat(inputVal),
             isLastKeyEquals: false,
             isLastKeyOperator: false,
-            lastKeyGrp: keyGrp
           },
           () => updateDisplay()
         );
@@ -143,7 +137,6 @@ class Calculator extends Component {
             inputBuffer: prevState.inputBuffer.concat(inputVal),
             isLastKeyEquals: false,
             isLastKeyOperator: false,
-            lastKeyGrp: keyGrp
           }),
           () => updateDisplay()
         );
@@ -188,8 +181,6 @@ class Calculator extends Component {
             if (operator === "divide" && operands[1] === 0) {
               console.log("Error: No division by 0. Operation aborted.");
               this.setState({
-                // display: operands[0].toString(),
-                // operands: [operands[0]],
                 display: "Err: n / 0",
                 operands: [],
                 lastOperator: ""
@@ -213,9 +204,7 @@ class Calculator extends Component {
           // lastOperator: keyId, 
           isLastKeyEquals: false,
           isLastKeyOperator: true,
-          lastKeyGrp: keyGrp, 
           operands: prevState.operands.concat(numFromBuffer)
-          // subtotal: calculateInput([ operand1, operand2 ], operator)
           }),
           () => calcInput()
         );
@@ -230,8 +219,6 @@ class Calculator extends Component {
       // Save the inputBuffer as a number. Consecutive equals keys use lastInput instead, as inputBuffer is cleared.
       let numFromBuffer = this.state.isLastKeyEquals ? this.state.lastInput : Number(this.state.inputBuffer.join(''));
       
-      
-
       const calcInput = () => {
         let operands, operator, result;
 
@@ -259,8 +246,6 @@ class Calculator extends Component {
           if (operator === "divide" && operands[1] === 0) {
             console.log("Error: No division by 0. Operation aborted.");
             this.setState({
-              // display: operands[0].toString(),
-              // operands: [operands[0]],
               display: "Err: n / 0",
               operands: [],
               lastOperator: ""
@@ -284,21 +269,10 @@ class Calculator extends Component {
         isLastKeyOperator: false,
         lastInput: numFromBuffer,
         // lastOperator: keyId, 
-        lastKeyGrp: keyGrp, 
         operands: prevState.operands.concat(numFromBuffer)
-        // subtotal: calculateInput([ operand1, operand2 ], operator)
         }),
         () => calcInput()
       );
-
-      // this.setState((prevState) => ({
-      //   input: prevState.input.concat([Number(prevState.display), prevState.lastOperator]),
-      //   inputLog: prevState.inputLog.concat([Number(prevState.display), prevState.lastOperator]),
-      //   lastInput: Number(prevState.display),
-      //   lastKeyGrp: keyGrp,
-      //   }),
-      //   () => calculateInput()
-      // );
 
     } // END EQUALS KEY HANDLER
   } // END handleInput()
