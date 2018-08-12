@@ -33,6 +33,21 @@ const calcKeys = [
   { id: "decimal", face: ".", value: ".", group: "number" }
 ]
 
+const defaultCalculatorState = {
+  display: "0",
+  input: [],
+  inputBuffer: [],
+  inputLog: [],
+  lastInput: 0,
+  lastOperator: "",
+  lastKeyGrp: "",
+  lastKeyId: "",
+  isLastKeyEquals: false,
+  isLastKeyOperator: false,
+  operands: [],
+  subtotal: null,
+};
+
 class CalcKey extends Component {
   constructor(props) {
     super(props);
@@ -50,7 +65,7 @@ class CalcKey extends Component {
   handleClick() {
     this.setCalcKeyClassName(this.props.clickedClassName);
     setTimeout(this.setCalcKeyClassName, 80, this.props.defaultClassName);
-    this.props.collectInput(this.props.id, this.props.value, this.props.group);
+    this.props.handleInput(this.props.id, this.props.value, this.props.group);
   }
 
   render() {
@@ -73,84 +88,35 @@ class Display extends Component {
 class Calculator extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      display: "0",
-      input: [],
-      inputBuffer: [],
-      inputLog: [],
-      lastInput: 0,
-      lastOperator: "",
-      lastKeyGrp: "",
-      lastKeyId: "",
-      subtotal: null,
-    };
+    this.state = defaultCalculatorState;
     this.setDisplay = this.setDisplay.bind(this);
-    this.collectInput = this.collectInput.bind(this);
+    this.handleInput = this.handleInput.bind(this);
   }
 
   setDisplay(str) {
     this.setState(() => ({display: str}));
   }
 
-  collectInput(keyId, keyVal, keyGrp) {
+  handleInput(keyId, keyVal, keyGrp) {
+    // HANDLE CLEAR KEY //
+    if (keyId === "clear") {
+      this.setState(defaultCalculatorState);
+    } 
     
-
-    const calculate = (operand1, operand2, operator) => {
-      let result;
-      const reducer = {
-        'multiply': (accumulator, currentValue) => accumulator * currentValue, 
-        'divide': (accumulator, currentValue) => accumulator / currentValue, 
-        'add': (accumulator, currentValue) => accumulator + currentValue, 
-        'subtract': (accumulator, currentValue) => accumulator - currentValue,
-      };
-      if (operator === "divide" && operand2 === 0) {
-        result = "err";
-      }
-      else {
-        result = [operand1, operand2].reduce(reducer[operator]);
-      }
-      return result;
-    };
-
-    const calculateInput = () => {
-      let operand1, operand2, operator, nextOperator;
-      // Do nothing unless the input array length is at least 4
-      if (this.state.input.length < 4) {
-        return;
-      }
-      else {
-        if (keyGrp === "operator") {
-          operand1 = this.state.input[0];
-          operator = this.state.input[1];
-          operand2 = this.state.input[2];
-          nextOperator = this.state.input[3];
-        }
-        else {
-          operand1 = this.state.input[0];
-          operator = this.state.input[1];
-          operand2 = this.state.input[2];
-          nextOperator = this.state.lastOperator;
-        }
-
-        this.setState({
-          display: calculate(operand1, operand2, operator).toString(),
-          input: [calculate(operand1, operand2, operator), nextOperator],
-          lastInput: operand2
-        });
-      }
-
-    };
-
-    if (keyGrp === "number") {
+    // HANDLE NUMBER KEY INPUTS //
+    else if (keyGrp === "number") {
       let inputVal = keyVal;
       
+      // Callback function to update display after setState
       const updateDisplay = () => {
         let numStr = this.state.inputBuffer.join('');
         this.setState({display: numStr});
       }
 
+      // Limit the number of characters in the buffer
+      if (this.state.inputBuffer.length > 24) return;
       // Return early to prevent multiple zeroes at beginning of numbers (US#10)
-      if (keyId === "zero" && this.state.inputBuffer.length === 1 && this.state.inputBuffer[0] === "0") return;
+      // if (keyId === "zero" && this.state.inputBuffer.length === 1 && this.state.inputBuffer[0] === "0") return;
       if (keyId === "decimal") {
         // Return early if number already contains a decimal point (US#11)
         if (this.state.inputBuffer.includes(keyVal)) return;
@@ -159,97 +125,187 @@ class Calculator extends Component {
           inputVal = ["0", keyVal];
         }
       }
-    
 
-      this.setState((prevState) => ({
-          inputBuffer: prevState.inputBuffer.concat(inputVal)
-        }),
-        () => updateDisplay()
-      );
-
-      // // return early to prevent multiple zeroes at beginning of numbers (US#10)
-      // if (keyId === "zero" && this.state.display === "0") return; 
-      // if (keyId === "decimal") {
-      //   // return early if number already contains a decimal point (US#11)
-      //   if (this.state.lastKeyGrp === "number" && this.state.display.includes(keyVal)) {
-      //     return;
-      //   }
-      //   // if display shows "0" or this click happens after an operator key is pressed, the decimal is prefixed with a "0"
-      //   else if (this.state.display === "0" || this.state.lastKeyGrp === "operator") {
-      //     inputVal = "0" + keyVal;
-      //   }
-      //   // otherwise, input just the decimal
-      //   else {
-      //     inputVal = keyVal;
-      //   }
-      // }
-      // // for the actual numbers, just input the value
-      // else {
-      //   inputVal = keyVal;
-      // }
-
-      // this.setState((prevState) => ({
-      //   // if display reads "0" or this click is after an operator, replace display content, otherwise concat.
-      //   display: prevState.display === "0" || prevState.lastKeyGrp === "operator" ? inputVal : prevState.display.concat(inputVal), 
-      //   // input: prevState.input.length === "0" ? prevState.input.concat(inputVal) : prevState.input.push(inputVal), 
-      //   lastKeyGrp: keyGrp,
-      //   })
-      // );
+      // Prevent leading zeroes for integers by replacing inputBuffer
+      if (this.state.inputBuffer.length === 1 && this.state.inputBuffer[0] === "0" && /[\d]/g.test(inputVal)) {
+        this.setState({
+            inputBuffer: [].concat(inputVal),
+            isLastKeyEquals: false,
+            isLastKeyOperator: false,
+            lastKeyGrp: keyGrp
+          },
+          () => updateDisplay()
+        );
+      }
+      // Otherwise, concat inputBuffer
+      else {
+        this.setState((prevState) => ({
+            inputBuffer: prevState.inputBuffer.concat(inputVal),
+            isLastKeyEquals: false,
+            isLastKeyOperator: false,
+            lastKeyGrp: keyGrp
+          }),
+          () => updateDisplay()
+        );
+      }
     }
 
+    // HANDLE OPERATOR KEY INPUTS //
     else if (keyGrp === "operator") {
-      
+      // Save the inputBuffer as a number
+      let numFromBuffer = Number(this.state.inputBuffer.join(''));
       // Consecutive operator key clicks? Just update the operator state.
-      if (this.state.lastKeyGrp === "operator") {
+      if (this.state.isLastKeyOperator) {
         this.setState({ lastOperator: keyId });
       }
       else {
-        
+
+        const calcInput = () => {
+          let operands, operator, result;
+          const doCalc = (operandArr, operator) => {
+            const reducer = {
+              'multiply': (accumulator, currentValue) => accumulator * currentValue, 
+              'divide': (accumulator, currentValue) => accumulator / currentValue, 
+              'add': (accumulator, currentValue) => accumulator + currentValue, 
+              'subtract': (accumulator, currentValue) => accumulator - currentValue,
+            };
+            return operandArr.reduce(reducer[operator]);
+          };
+          // Capture the operands here
+          operands = this.state.operands;
+
+          // If the operand array length < 2, merely set the operator
+          if (operands.length < 2) {
+            this.setState({
+              lastOperator: keyId,
+            });
+
+          }
+          else {
+            // Capture the operator here
+            operator = this.state.lastOperator;
+            // Abort operation if division by 0 and display error.
+            if (operator === "divide" && operands[1] === 0) {
+              console.log("Error: No division by 0. Operation aborted.");
+              this.setState({
+                // display: operands[0].toString(),
+                // operands: [operands[0]],
+                display: "Err: n / 0",
+                operands: [],
+                lastOperator: ""
+              });
+            }
+            else {
+              result = doCalc(operands, operator);
+              this.setState({
+                display: result.toString(),
+                operands: [result],
+                lastOperator: keyId,
+              });
+            }
+          }
+
+        }; // const = calcInput end
+
         this.setState((prevState) => ({ 
-          // display: calculateInput([ operand1, operand2 ], operator).toString(),
-          input: prevState.input.concat([Number(prevState.display), keyId]),
-          inputLog: prevState.inputLog.concat([Number(prevState.display), keyId]),
-          lastInput: Number(prevState.display),
-          lastOperator: keyId, 
+          inputBuffer: [],
+          lastInput: numFromBuffer,
+          // lastOperator: keyId, 
+          isLastKeyEquals: false,
+          isLastKeyOperator: true,
           lastKeyGrp: keyGrp, 
+          operands: prevState.operands.concat(numFromBuffer)
           // subtotal: calculateInput([ operand1, operand2 ], operator)
           }),
-          () => calculateInput()
+          () => calcInput()
         );
       }
-    }
+    } // END HANDLER FOR OPERATOR KEYS
 
+    // HANDLER FOR EQUALS KEY //
     else {
-      if (keyId === "clear") {
-        this.setState(() => ({ display: "0", input: [], inputBuffer: [], inputLog: [], lastInput: 0, lastOperator: "", lastKeyGrp: keyGrp, subtotal: null }));
-      }
-      else {
-        console.log("Equals key pressed.");
+      console.log("Equals key pressed.");
+      // No previous operator set? Return early.
+      if (!this.state.lastOperator) return;
+      // Save the inputBuffer as a number. Consecutive equals keys use lastInput instead, as inputBuffer is cleared.
+      let numFromBuffer = this.state.isLastKeyEquals ? this.state.lastInput : Number(this.state.inputBuffer.join(''));
+      
+      
 
-        this.setState((prevState) => ({
-          input: prevState.input.concat([Number(prevState.display), prevState.lastOperator]),
-          inputLog: prevState.inputLog.concat([Number(prevState.display), prevState.lastOperator]),
-          lastInput: Number(prevState.display),
-          lastKeyGrp: keyGrp,
-          }),
-          () => calculateInput()
-        );
+      const calcInput = () => {
+        let operands, operator, result;
 
-        // Can this work to update state in two stages with a callback?
-        // this.setState((prevState) => ({
-        //   // obj literal
-        // }), (prevState) => ({
-        //   // obj literal
-        // }));
-      }
-    }
+        const doCalc = (operandArr, operator) => {
+          const reducer = {
+            'multiply': (accumulator, currentValue) => accumulator * currentValue, 
+            'divide': (accumulator, currentValue) => accumulator / currentValue, 
+            'add': (accumulator, currentValue) => accumulator + currentValue, 
+            'subtract': (accumulator, currentValue) => accumulator - currentValue,
+          };
+          return operandArr.reduce(reducer[operator]);
+        };
 
-  }
+        // Capture the operands here
+        operands = this.state.operands;
+
+        // If the operand array length < 2, do nothing.
+        if (operands.length < 2) {
+          return;
+        }
+        else {
+          // Capture the operator here
+          operator = this.state.lastOperator;
+          // Abort operation if division by 0 and display error.
+          if (operator === "divide" && operands[1] === 0) {
+            console.log("Error: No division by 0. Operation aborted.");
+            this.setState({
+              // display: operands[0].toString(),
+              // operands: [operands[0]],
+              display: "Err: n / 0",
+              operands: [],
+              lastOperator: ""
+            });
+          }
+          else {
+            result = doCalc(operands, operator);
+            this.setState({
+              display: result.toString(),
+              operands: [result],
+              // lastOperator: operator,
+            });
+          }
+        }
+
+      }; // const = calcInput end
+
+      this.setState((prevState) => ({ 
+        inputBuffer: [],
+        isLastKeyEquals: true,
+        isLastKeyOperator: false,
+        lastInput: numFromBuffer,
+        // lastOperator: keyId, 
+        lastKeyGrp: keyGrp, 
+        operands: prevState.operands.concat(numFromBuffer)
+        // subtotal: calculateInput([ operand1, operand2 ], operator)
+        }),
+        () => calcInput()
+      );
+
+      // this.setState((prevState) => ({
+      //   input: prevState.input.concat([Number(prevState.display), prevState.lastOperator]),
+      //   inputLog: prevState.inputLog.concat([Number(prevState.display), prevState.lastOperator]),
+      //   lastInput: Number(prevState.display),
+      //   lastKeyGrp: keyGrp,
+      //   }),
+      //   () => calculateInput()
+      // );
+
+    } // END EQUALS KEY HANDLER
+  } // END handleInput()
 
   render() {
     return (
       <div id="calculator">
-
         <Display 
           display={this.state.display} 
         />
@@ -264,16 +320,14 @@ class Calculator extends Component {
               defaultClassName="calckey"
               clickedClassName="calckey calckey-clicked" 
               setDisplay={this.setDisplay} 
-              collectInput={this.collectInput} 
+              handleInput={this.handleInput} 
             />
           ))}
         </div>
-        
-
       </div>
     );
-  }
-}
+  } // END render()
+} // END Calculator class
 
 class App extends Component {
   render() {
