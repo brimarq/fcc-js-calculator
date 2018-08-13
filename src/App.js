@@ -68,9 +68,7 @@ class CalcKey extends Component {
       <div id={this.props.id} className={this.state.calcKeyClassName} onClick={this.handleClick}>{this.props.face}</div>
     );
   }
-
 }
-
 
 class Display extends Component {
   render() {
@@ -93,14 +91,70 @@ class Calculator extends Component {
   }
 
   handleInput(keyId, keyVal, keyGrp) {
+
+    // CALLBACK FUNC TO CALCULATE INPUTS AFTER SETSTATE
+    const calcInput = () => {
+      // Capture the operands array and operator. 
+      let operands = this.state.operands;
+      let operator = this.state.lastOperator; 
+      let result;
+    
+      const doCalc = (operandArr, operator) => {
+        const reducer = {
+          'multiply': (accumulator, currentValue) => accumulator * currentValue, 
+          'divide': (accumulator, currentValue) => accumulator / currentValue, 
+          'add': (accumulator, currentValue) => accumulator + currentValue, 
+          'subtract': (accumulator, currentValue) => accumulator - currentValue,
+        };
+        return operandArr.reduce(reducer[operator]);
+      };
+    
+      // If the operands array length < 2 
+      if (operands.length < 2) {
+        // Equals key pressed? Return early.
+        if (keyId === "equals") {
+          return;
+        }
+        // Operator key? Merely set the operator.
+        else {
+          this.setState({
+            lastOperator: keyId,
+          });
+        }
+      }
+      else {
+        // Abort operation if division by 0 and display error.
+        if (operator === "divide" && operands[1] === 0) {
+          console.log("Error: No division by 0. Operation aborted.");
+          this.setState({
+            display: "Err: n / 0",
+            operands: [],
+            lastOperator: ""
+          });
+        }
+        else {
+          // Keep the operator on equals keypress, otherwise set to operator keyId
+          let nextOperator = keyId === "equals" ? operator : keyId;
+          result = doCalc(operands, operator);
+          this.setState({
+            display: result.toString(),
+            operands: [result],
+            lastOperator: nextOperator,
+          });
+        }
+      }
+    }; // END calcInput function
+
     // HANDLE CLEAR KEY //
     if (keyId === "clear") {
       this.setState(defaultCalculatorState);
     } 
     
-    // HANDLE NUMBER KEY INPUTS //
+    // HANDLE NUMBER KEYS //
     else if (keyGrp === "number") {
       let inputVal = keyVal;
+      // Boolean test for inputBuffer option in setState that prevents leading zeroes on integers
+      let isBufferOnlyZeroAndInputIsInt = this.state.inputBuffer.length === 1 && this.state.inputBuffer[0] === "0" && /[\d]/g.test(inputVal);
       
       // Callback function to update display after setState
       const updateDisplay = () => {
@@ -110,8 +164,8 @@ class Calculator extends Component {
 
       // Limit the number of characters in the buffer
       if (this.state.inputBuffer.length > 24) return;
-      // Return early to prevent multiple zeroes at beginning of numbers (US#10)
-      // if (keyId === "zero" && this.state.inputBuffer.length === 1 && this.state.inputBuffer[0] === "0") return;
+
+      // Decimal key options
       if (keyId === "decimal") {
         // Return early if number already contains a decimal point (US#11)
         if (this.state.inputBuffer.includes(keyVal)) return;
@@ -121,87 +175,28 @@ class Calculator extends Component {
         }
       }
 
-      // Prevent leading zeroes for integers by replacing inputBuffer
-      if (this.state.inputBuffer.length === 1 && this.state.inputBuffer[0] === "0" && /[\d]/g.test(inputVal)) {
-        this.setState({
-            inputBuffer: [].concat(inputVal),
-            isLastKeyEquals: false,
-            isLastKeyOperator: false,
-          },
-          () => updateDisplay()
-        );
-      }
-      // Otherwise, concat inputBuffer
-      else {
-        this.setState((prevState) => ({
-            inputBuffer: prevState.inputBuffer.concat(inputVal),
-            isLastKeyEquals: false,
-            isLastKeyOperator: false,
-          }),
-          () => updateDisplay()
-        );
-      }
+      this.setState((prevState) => ({
+          inputBuffer: isBufferOnlyZeroAndInputIsInt ? [].concat(inputVal) : prevState.inputBuffer.concat(inputVal),
+          isLastKeyEquals: false,
+          isLastKeyOperator: false,
+        }),
+        () => updateDisplay()
+      );
     }
 
     // HANDLE OPERATOR KEY INPUTS //
     else if (keyGrp === "operator") {
       // Save the inputBuffer as a number
       let numFromBuffer = Number(this.state.inputBuffer.join(''));
-      // Consecutive operator key clicks? Just update the operator state.
-      if (this.state.isLastKeyOperator) {
-        this.setState({ lastOperator: keyId });
+      // Consecutive operator key clicks or operator following equals key? Just update the operator state.
+      if (this.state.isLastKeyOperator || this.state.isLastKeyEquals) {
+        this.setState({ lastOperator: keyId, isLastKeyEquals: false, isLastKeyOperator: true });
       }
       else {
-
-        const calcInput = () => {
-          let operands, operator, result;
-          const doCalc = (operandArr, operator) => {
-            const reducer = {
-              'multiply': (accumulator, currentValue) => accumulator * currentValue, 
-              'divide': (accumulator, currentValue) => accumulator / currentValue, 
-              'add': (accumulator, currentValue) => accumulator + currentValue, 
-              'subtract': (accumulator, currentValue) => accumulator - currentValue,
-            };
-            return operandArr.reduce(reducer[operator]);
-          };
-          // Capture the operands here
-          operands = this.state.operands;
-
-          // If the operand array length < 2, merely set the operator
-          if (operands.length < 2) {
-            this.setState({
-              lastOperator: keyId,
-            });
-
-          }
-          else {
-            // Capture the operator here
-            operator = this.state.lastOperator;
-            // Abort operation if division by 0 and display error.
-            if (operator === "divide" && operands[1] === 0) {
-              console.log("Error: No division by 0. Operation aborted.");
-              this.setState({
-                display: "Err: n / 0",
-                operands: [],
-                lastOperator: ""
-              });
-            }
-            else {
-              result = doCalc(operands, operator);
-              this.setState({
-                display: result.toString(),
-                operands: [result],
-                lastOperator: keyId,
-              });
-            }
-          }
-
-        }; // const = calcInput end
-
         this.setState((prevState) => ({ 
           inputBuffer: [],
           lastInput: numFromBuffer,
-          // lastOperator: keyId, 
+          // lastOperator: keyId, // moved this into the callback
           isLastKeyEquals: false,
           isLastKeyOperator: true,
           operands: prevState.operands.concat(numFromBuffer)
@@ -209,59 +204,15 @@ class Calculator extends Component {
           () => calcInput()
         );
       }
-    } // END HANDLER FOR OPERATOR KEYS
+    } 
 
     // HANDLER FOR EQUALS KEY //
     else {
       console.log("Equals key pressed.");
       // No previous operator set? Return early.
       if (!this.state.lastOperator) return;
-      // Save the inputBuffer as a number. Consecutive equals keys use lastInput instead, as inputBuffer is cleared.
+      // Save the inputBuffer as a number. Consecutive equals keys recycle lastInput instead, as inputBuffer is cleared after each keypress.
       let numFromBuffer = this.state.isLastKeyEquals ? this.state.lastInput : Number(this.state.inputBuffer.join(''));
-      
-      const calcInput = () => {
-        let operands, operator, result;
-
-        const doCalc = (operandArr, operator) => {
-          const reducer = {
-            'multiply': (accumulator, currentValue) => accumulator * currentValue, 
-            'divide': (accumulator, currentValue) => accumulator / currentValue, 
-            'add': (accumulator, currentValue) => accumulator + currentValue, 
-            'subtract': (accumulator, currentValue) => accumulator - currentValue,
-          };
-          return operandArr.reduce(reducer[operator]);
-        };
-
-        // Capture the operands here
-        operands = this.state.operands;
-
-        // If the operand array length < 2, do nothing.
-        if (operands.length < 2) {
-          return;
-        }
-        else {
-          // Capture the operator here
-          operator = this.state.lastOperator;
-          // Abort operation if division by 0 and display error.
-          if (operator === "divide" && operands[1] === 0) {
-            console.log("Error: No division by 0. Operation aborted.");
-            this.setState({
-              display: "Err: n / 0",
-              operands: [],
-              lastOperator: ""
-            });
-          }
-          else {
-            result = doCalc(operands, operator);
-            this.setState({
-              display: result.toString(),
-              operands: [result],
-              // lastOperator: operator,
-            });
-          }
-        }
-
-      }; // const = calcInput end
 
       this.setState((prevState) => ({ 
         inputBuffer: [],
@@ -273,8 +224,7 @@ class Calculator extends Component {
         }),
         () => calcInput()
       );
-
-    } // END EQUALS KEY HANDLER
+    } 
   } // END handleInput()
 
   render() {
