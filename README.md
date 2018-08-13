@@ -2,7 +2,7 @@
 
 https://learn.freecodecamp.org/front-end-libraries/front-end-libraries-projects/build-a-javascript-calculator  
 
-## [Working CodePen Demo](https://codepen.io/brimarq/pen/ejXgNG/)
+## [Working CodePen Demo](https://codepen.io/brimarq/full/ejXgNG/)
 
 - Objective: Build a CodePen app that is functionally similar to this: [https://codepen.io/freeCodeCamp/full/wgGVVX](https://codepen.io/freeCodeCamp/full/wgGVVX).  
 - Fulfill the below user stories and get all of the tests to pass. Give it your own personal style.  
