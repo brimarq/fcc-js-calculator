@@ -13,6 +13,19 @@ import './App.css';
 // MINUS SIGN
 // Unicode: U+2212, UTF-8: E2 88 92
 
+// ⁺
+// SUPERSCRIPT PLUS SIGN
+// Unicode: U+207A, UTF-8: E2 81 BA
+
+// ₋
+// SUBSCRIPT MINUS
+// Unicode: U+208B, UTF-8: E2 82 8B
+
+// ⁺/₋ 
+
+// ±
+
+
 const calcKeys = [
   { id: "multiply", face: "×", value: "*", group: "operator" },
   { id: "divide", face: "÷", value: "/", group: "operator" },
@@ -82,12 +95,7 @@ class Calculator extends Component {
   constructor(props) {
     super(props);
     this.state = defaultCalculatorState;
-    this.setDisplay = this.setDisplay.bind(this);
     this.handleInput = this.handleInput.bind(this);
-  }
-
-  setDisplay(str) {
-    this.setState(() => ({display: str}));
   }
 
   handleInput(keyId, keyVal, keyGrp) {
@@ -208,10 +216,9 @@ class Calculator extends Component {
 
     // HANDLER FOR EQUALS KEY //
     else {
-      console.log("Equals key pressed.");
       // No previous operator set? Return early.
       if (!this.state.lastOperator) return;
-      // Save the inputBuffer as a number. Consecutive equals keys recycle lastInput instead, as inputBuffer is cleared after each keypress.
+      // Save the inputBuffer as a number. Consecutive equals key presses recycle lastInput instead, as inputBuffer is cleared after each keypress.
       let numFromBuffer = this.state.isLastKeyEquals ? this.state.lastInput : Number(this.state.inputBuffer.join(''));
 
       this.setState((prevState) => ({ 
@@ -243,7 +250,6 @@ class Calculator extends Component {
               group={calcKey.group}
               defaultClassName="calckey"
               clickedClassName="calckey calckey-clicked" 
-              setDisplay={this.setDisplay} 
               handleInput={this.handleInput} 
             />
           ))}
