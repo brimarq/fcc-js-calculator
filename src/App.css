@@ -89,8 +89,8 @@
   grid-column-end: span 2;
 }
 
-#clear, #equals {
+/* #clear, #equals {
   grid-row-end: span 2;
   line-height: calc(var(--calckey-size) * 2);
-}
+} */
 

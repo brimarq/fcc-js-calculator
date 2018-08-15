@@ -27,23 +27,25 @@ import './App.css';
 
 
 const calcKeys = [
-  { id: "multiply", face: "×", value: "*", group: "operator" },
+  { id: "clear", face: "AC", value: "AC", group: "clr-eql" },
+  { id: "posneg", face: "+/−", value: "+/−", group: "numChange" },
+  { id: "percent", face: "%", value: "%", group: "numChange" },
   { id: "divide", face: "÷", value: "/", group: "operator" },
-  { id: "add", face: "+", value: "+", group: "operator" },
-  { id: "subtract", face: "−", value: "-", group: "operator" },
   { id: "seven", face: "7", value: "7", group: "number" },
   { id: "eight", face: "8", value: "8", group: "number" },
   { id: "nine", face: "9", value: "9", group: "number" },
-  { id: "clear", face: "AC", value: "AC", group: "clr-eql" },
+  { id: "multiply", face: "×", value: "*", group: "operator" },
   { id: "four", face: "4", value: "4", group: "number" },
   { id: "five", face: "5", value: "5", group: "number" },
   { id: "six", face: "6", value: "6", group: "number" },
+  { id: "subtract", face: "−", value: "-", group: "operator" },
   { id: "one", face: "1", value: "1", group: "number" },
   { id: "two", face: "2", value: "2", group: "number" },
   { id: "three", face: "3", value: "3", group: "number" },
-  { id: "equals", face: "=", value: "=", group: "clr-eql" },
+  { id: "add", face: "+", value: "+", group: "operator" },
   { id: "zero", face: "0", value: "0", group: "number" },
-  { id: "decimal", face: ".", value: ".", group: "number" }
+  { id: "decimal", face: ".", value: ".", group: "number" },
+  { id: "equals", face: "=", value: "=", group: "clr-eql" },
 ]
 
 const defaultCalculatorState = {
@@ -213,6 +215,13 @@ class Calculator extends Component {
         );
       }
     } 
+
+    // HANDLE NUMCHANGE (% OR +/-) KEY INPUTS //
+    else if (keyGrp === "numChange") {
+      // Return early if key is pressed directly after an operator key.
+      if (this.state.isLastKeyOperator) return;
+      console.log(keyId + " key pressed");
+    }
 
     // HANDLER FOR EQUALS KEY //
     else {
