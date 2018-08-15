@@ -102,21 +102,21 @@ class Calculator extends Component {
 
   handleInput(keyId, keyVal, keyGrp) {
 
-    // CALLBACK FUNC TO CALCULATE INPUTS AFTER SETSTATE
-    const calcInput = () => {
+    // FUNC TO CALCULATE INPUTS - USEFUL AS A CALLBACK AFTER SETSTATE
+    const calcInput = (operands, operator) => {
       // Capture the operands array and operator. 
-      let operands = this.state.operands;
-      let operator = this.state.lastOperator; 
+      // let operands = this.state.operands;
+      // let operator = this.state.lastOperator; 
       let result;
     
-      const doCalc = (operandArr, operator) => {
+      const doCalc = (operandsArr, operatorStr) => {
         const reducer = {
           'multiply': (accumulator, currentValue) => accumulator * currentValue, 
           'divide': (accumulator, currentValue) => accumulator / currentValue, 
           'add': (accumulator, currentValue) => accumulator + currentValue, 
           'subtract': (accumulator, currentValue) => accumulator - currentValue,
         };
-        return operandArr.reduce(reducer[operator]);
+        return operandsArr.reduce(reducer[operatorStr]);
       };
     
       // If the operands array length < 2 
@@ -211,7 +211,7 @@ class Calculator extends Component {
           isLastKeyOperator: true,
           operands: prevState.operands.concat(numFromBuffer)
           }),
-          () => calcInput()
+          () => calcInput(this.state.operands, this.state.lastOperator)
         );
       }
     } 
@@ -238,7 +238,7 @@ class Calculator extends Component {
         // lastOperator: keyId, 
         operands: prevState.operands.concat(numFromBuffer)
         }),
-        () => calcInput()
+        () => calcInput(this.state.operands, this.state.lastOperator)
       );
     } 
   } // END handleInput()
