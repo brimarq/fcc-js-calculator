@@ -104,9 +104,7 @@ class Calculator extends Component {
 
     // FUNC TO CALCULATE INPUTS - USEFUL AS A CALLBACK AFTER SETSTATE
     const calcInput = (operands, operator) => {
-      // Capture the operands array and operator. 
-      // let operands = this.state.operands;
-      // let operator = this.state.lastOperator; 
+
       let result;
     
       const doCalc = (operandsArr, operatorStr) => {
@@ -143,14 +141,32 @@ class Calculator extends Component {
           });
         }
         else {
-          // Keep the operator on equals keypress, otherwise set to operator keyId
-          let nextOperator = keyId === "equals" ? operator : keyId;
+          // Do the calculation
           result = doCalc(operands, operator);
-          this.setState({
-            display: result.toString(),
-            operands: [result],
-            lastOperator: nextOperator,
-          });
+
+          if (keyGrp === "numChange") {
+            if (this.state.isLastKeyEquals) {
+              this.setState({
+                display: result.toString(),
+                operands: [result]
+              });
+            } else {
+              this.setState({
+                display: result.toString(),
+                inputBuffer: [...result.toString()]
+              });
+            }
+          } else {
+            // Keep the operator on equals keypress, otherwise set to operator keyId
+            let nextOperator = keyId === "equals" ? operator : keyId;
+            
+            this.setState({
+              display: result.toString(),
+              operands: [result],
+              lastOperator: nextOperator,
+            });
+          }
+          
         }
       }
     }; // END calcInput function
@@ -218,9 +234,21 @@ class Calculator extends Component {
 
     // HANDLE NUMCHANGE (% OR +/-) KEY INPUTS //
     else if (keyGrp === "numChange") {
+      // Init variables
+      let operand1;
+      let operand2 = keyId === "posneg" ? -1 : 100;
+      let operator = keyId === "posneg" ? "multiply" : "divide";
+      
       // Return early if key is pressed directly after an operator key.
       if (this.state.isLastKeyOperator) return;
       console.log(keyId + " key pressed");
+      
+      if (this.state.isLastKeyEquals) {
+        operand1 = this.state.operands[0];
+      } else {
+        operand1 = Number(this.state.inputBuffer.join(''));
+      }
+      calcInput([operand1, operand2], operator);
     }
 
     // HANDLER FOR EQUALS KEY //
