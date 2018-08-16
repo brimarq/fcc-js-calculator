@@ -241,8 +241,8 @@ class Calculator extends Component {
       
       // Return early if key is pressed directly after an operator key.
       if (this.state.isLastKeyOperator) return;
-      console.log(keyId + " key pressed");
       
+      // where to get the first operand
       if (this.state.isLastKeyEquals) {
         operand1 = this.state.operands[0];
       } else {
