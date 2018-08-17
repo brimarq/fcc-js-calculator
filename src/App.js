@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 import './App.css';
 
 // ÷
@@ -58,7 +58,7 @@ const defaultCalculatorState = {
   operands: [],
 };
 
-class CalcKey extends Component {
+class CalcKey extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -74,7 +74,7 @@ class CalcKey extends Component {
   
   handleClick() {
     this.setCalcKeyClassName(this.props.clickedClassName);
-    setTimeout(this.setCalcKeyClassName, 80, this.props.defaultClassName);
+    setTimeout(this.setCalcKeyClassName, 50, this.props.defaultClassName);
     this.props.handleInput(this.props.id, this.props.value, this.props.group);
   }
 
@@ -85,7 +85,7 @@ class CalcKey extends Component {
   }
 }
 
-class Display extends Component {
+class Display extends PureComponent {
   render() {
     return (
       <div id="display">{this.props.display}</div>
@@ -189,7 +189,7 @@ class Calculator extends Component {
       }
 
       // Limit the number of characters in the buffer
-      if (this.state.inputBuffer.length > 24) return;
+      if (this.state.inputBuffer.length > 17) return;
 
       // Decimal key options
       if (keyId === "decimal") {
