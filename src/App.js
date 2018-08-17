@@ -27,25 +27,25 @@ import './App.css';
 
 
 const calcKeys = [
-  { id: "clear", face: "AC", value: "AC", group: "clr-eql" },
-  { id: "posneg", face: "+/−", value: "+/−", group: "numChange" },
-  { id: "percent", face: "%", value: "%", group: "numChange" },
-  { id: "divide", face: "÷", value: "/", group: "operator" },
-  { id: "seven", face: "7", value: "7", group: "number" },
-  { id: "eight", face: "8", value: "8", group: "number" },
-  { id: "nine", face: "9", value: "9", group: "number" },
-  { id: "multiply", face: "×", value: "*", group: "operator" },
-  { id: "four", face: "4", value: "4", group: "number" },
-  { id: "five", face: "5", value: "5", group: "number" },
-  { id: "six", face: "6", value: "6", group: "number" },
-  { id: "subtract", face: "−", value: "-", group: "operator" },
-  { id: "one", face: "1", value: "1", group: "number" },
-  { id: "two", face: "2", value: "2", group: "number" },
-  { id: "three", face: "3", value: "3", group: "number" },
-  { id: "add", face: "+", value: "+", group: "operator" },
-  { id: "zero", face: "0", value: "0", group: "number" },
-  { id: "decimal", face: ".", value: ".", group: "number" },
-  { id: "equals", face: "=", value: "=", group: "clr-eql" },
+  { id: "clear", value: "AC", group: "clr-eql" },
+  { id: "posneg", value: "+/−", group: "numChange" },
+  { id: "percent", value: "%", group: "numChange" },
+  { id: "divide", value: "÷", group: "operator" },
+  { id: "seven", value: "7", group: "number" },
+  { id: "eight", value: "8", group: "number" },
+  { id: "nine", value: "9", group: "number" },
+  { id: "multiply", value: "×", group: "operator" },
+  { id: "four", value: "4", group: "number" },
+  { id: "five", value: "5", group: "number" },
+  { id: "six", value: "6", group: "number" },
+  { id: "subtract", value: "−", group: "operator" },
+  { id: "one", value: "1", group: "number" },
+  { id: "two", value: "2", group: "number" },
+  { id: "three", value: "3", group: "number" },
+  { id: "add", value: "+", group: "operator" },
+  { id: "zero", value: "0", group: "number" },
+  { id: "decimal", value: ".", group: "number" },
+  { id: "equals", value: "=", group: "clr-eql" },
 ]
 
 const defaultCalculatorState = {
@@ -80,7 +80,7 @@ class CalcKey extends PureComponent {
 
   render() {
     return (
-      <div id={this.props.id} className={this.state.calcKeyClassName} onClick={this.handleClick}>{this.props.face}</div>
+      <div id={this.props.id} className={this.state.calcKeyClassName} onClick={this.handleClick}>{this.props.value}</div>
     );
   }
 }
@@ -189,7 +189,7 @@ class Calculator extends Component {
       }
 
       // Limit the number of characters in the buffer
-      if (this.state.inputBuffer.length > 17) return;
+      if (this.state.inputBuffer.length > 15) return;
 
       // Decimal key options
       if (keyId === "decimal") {
@@ -277,12 +277,15 @@ class Calculator extends Component {
         <Display 
           display={this.state.display} 
         />
+        <div id="calcLabel">
+        <span id="calcLabelLeft">FCC FEL-P4</span>
+        <span id="calcLabelRight">JS-CALCULATOR</span>
+        </div>
         <div id="keypad">
           { calcKeys.map(calcKey => (
             <CalcKey 
               key={calcKey.id} 
-              id={calcKey.id} 
-              face={calcKey.face} 
+              id={calcKey.id}  
               value={calcKey.value} 
               group={calcKey.group}
               defaultClassName="calckey"
