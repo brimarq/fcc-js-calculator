@@ -51,8 +51,8 @@
   background-size: 20% 100%;
   border-radius: 20px;
   box-shadow: inset -2px 2px 4px 0px rgba(255,255,255,.5), inset 3px -3px 6px 0px rgba(0,0,0,.5);
-  /* -webkit-box-shadow: inset -5px 5px 10px 0px rgba(255,255,255,1), inset 5px -5px 10px 0px rgba(0,0,0,.5);
-  -moz-box-shadow: inset -5px 5px 10px 0px rgba(255,255,255,1), inset 5px -5px 10px 0px rgba(0,0,0,.5); */
+  -webkit-box-shadow: inset -2px 2px 4px 0px rgba(255,255,255,.5), inset 3px -3px 6px 0px rgba(0,0,0,.5);
+  -moz-box-shadow: inset -2px 2px 4px 0px rgba(255,255,255,.5), inset 3px -3px 6px 0px rgba(0,0,0,.5);
 }
 
 #display {
@@ -60,14 +60,12 @@
   font-family: 'Segment7Standard', sans-serif;
   letter-spacing: 0.07em;
   text-shadow: 1px 1px 2px #555;
-  /* font-family: 'Orbitron', sans-serif; */
   font-size: 1.375em;
   height: 35px;
   max-width: 237px;
   overflow: hidden;
   background-color: #7E8C74;
   border: 1px rgba(0,0,0,.7) solid;
-  /* margin-bottom: 10px; */
   border-radius: 5px;
   line-height: 40px;
   text-align: right;
@@ -103,16 +101,15 @@
   border-radius: 5px;
   cursor: pointer;
   box-shadow: inset -1px 1px 2px 0px rgba(255,255,255,.5), inset 1px -1px 2px 0px rgba(0,0,0,.5);
-  /* -webkit-box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5);
-  -moz-box-shadow: inset -2px 2px 5px 0px rgba(255,255,255,.5), inset 2px -2px 5px 0px rgba(0,0,0,.5); */
+  -webkit-box-shadow: inset -1px 1px 2px 0px rgba(255,255,255,.5), inset 1px -1px 2px 0px rgba(0,0,0,.5);
+  -moz-box-shadow: inset -1px 1px 2px 0px rgba(255,255,255,.5), inset 1px -1px 2px 0px rgba(0,0,0,.5);
 }
 
 .calckey.calckey-clicked {
   font-size: 1.1em;
   box-shadow: inset -2px 2px 4px 0px rgba(255,255,255,.5), inset 2px -2px 4px 0px rgba(0,0,0,.5);
-  /* box-shadow: inset -2px 2px 5px 0px rgba(0,0,0,.5), inset 2px -2px 5px 0px rgba(255,255,255,.5);
-  -webkit-box-shadow: inset -2px 2px 5px 0px rgba(0,0,0,.5), inset 2px -2px 5px 0px rgba(255,255,255,.5);
-  -moz-box-shadow: inset -2px 2px 5px 0px rgba(0,0,0,.5), inset 2px -2px 5px 0px rgba(255,255,255,.5); */
+  -webkit-box-shadow: inset -2px 2px 4px 0px rgba(255,255,255,.5), inset 2px -2px 4px 0px rgba(0,0,0,.5);
+  -moz-box-shadow: inset -2px 2px 4px 0px rgba(255,255,255,.5), inset 2px -2px 4px 0px rgba(0,0,0,.5);
 }
 
 #zero {
@@ -126,9 +123,4 @@
 #clear, #posneg, #percent {
   background-color: #4444;
 }
-
-/* #clear, #equals {
-  grid-row-end: span 2;
-  line-height: calc(var(--calckey-size) * 2);
-} */
 
