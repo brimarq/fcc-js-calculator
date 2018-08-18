@@ -1,31 +1,6 @@
 import React, { Component, PureComponent } from 'react';
 import './App.css';
 
-// ÷
-// DIVISION SIGN
-// Unicode: U+00F7, UTF-8: C3 B7
-
-// ×
-// MULTIPLICATION SIGN
-// Unicode: U+00D7, UTF-8: C3 97
-
-// −
-// MINUS SIGN
-// Unicode: U+2212, UTF-8: E2 88 92
-
-// ⁺
-// SUPERSCRIPT PLUS SIGN
-// Unicode: U+207A, UTF-8: E2 81 BA
-
-// ₋
-// SUBSCRIPT MINUS
-// Unicode: U+208B, UTF-8: E2 82 8B
-
-// ⁺/₋ 
-
-// ±
-
-
 const calcKeys = [
   { id: "clear", value: "AC", group: "clr-eql" },
   { id: "posneg", value: "+/−", group: "numChange" },
@@ -303,11 +278,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">Header</header>
+        <header className="App-header"></header>
         <main className="App-main">
           <Calculator />
         </main>
-        <footer className="App-footer">Footer</footer>
+        <footer className="App-footer"></footer>
       </div>
     );
   }
