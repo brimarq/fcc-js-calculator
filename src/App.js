@@ -79,8 +79,26 @@ class Calculator extends Component {
 
     // FUNC TO CALCULATE INPUTS - USEFUL AS A CALLBACK AFTER SETSTATE
     const calcInput = (operands, operator) => {
-
       let result;
+
+      // Set the highest number of decimal places in operands as the exponent for converting them to Ints in order to avoid any wonky JS floating-point arithmetic.
+      const exp = Math.max(...operands.map(e => {
+        let numStr = e.toString();
+        // If element is an Int, return 0. Otherwise, to the number of decimal places.
+        return !numStr.includes(".") ? 0 : numStr.slice(numStr.indexOf(".") + 1).length;
+      }));
+
+      // Convert any floats to integers to avoid any wonky JS floating-point arithmetic.
+      const operandsAsInts = operands.map(e => e * Math.pow(10, exp));
+      
+      // Use appropriate negative exp to correctly set the decimal place in result after calculating operands converted to Ints.
+      const expNeg = {
+        'multiply': -exp * 2, // When multiplying nums w/exponents, the exps are added. Here, return -exp * 2, since the same exp was used to convert the operands to integers.
+        'divide': 0, // When dividing nums w/exponents, the exps are subtracted. Here, return 0, since the same exp was used to convert the operands to integers.
+        // For addition and subtraction, just use the negative of the original exp to restore the decimal place.
+        'add': -exp, 
+        'subtract': -exp,
+      };
     
       const doCalc = (operandsArr, operatorStr) => {
         const reducer = {
@@ -116,8 +134,8 @@ class Calculator extends Component {
           });
         }
         else {
-          // Do the calculation
-          result = doCalc(operands, operator);
+          // Do the calculation and restore the proper decimal place if needed.
+          result = doCalc(operandsAsInts, operator) * Math.pow(10, expNeg[operator]);
 
           if (keyGrp === "numChange") {
             if (this.state.isLastKeyEquals) {
