@@ -76,6 +76,8 @@ class Calculator extends Component {
   }
 
   handleInput(keyId, keyVal, keyGrp) {
+    // Set the display character limit
+    const maxChars = 16;
 
     // FUNC TO CALCULATE INPUTS - USEFUL AS A CALLBACK AFTER SETSTATE
     const calcInput = (operands, operator) => {
@@ -182,7 +184,7 @@ class Calculator extends Component {
       }
 
       // Limit the number of characters in the buffer
-      if (this.state.inputBuffer.length > 15) return;
+      if (this.state.inputBuffer.length === maxChars) return;
 
       // Decimal key options
       if (keyId === "decimal") {
