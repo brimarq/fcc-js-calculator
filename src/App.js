@@ -91,13 +91,13 @@ class Calculator extends Component {
       // Convert any floats to integers to avoid any wonky JS floating-point arithmetic.
       const operandsAsInts = operands.map(e => e * Math.pow(10, exp));
       
-      // Use appropriate negative exp to correctly set the decimal place in result after calculating operands converted to Ints.
-      const expNeg = {
-        'multiply': -exp * 2, // When multiplying nums w/exponents, the exps are added. Here, return -exp * 2, since the same exp was used to convert the operands to integers.
+      // Use appropriate exponent for reversing the ones used when converting operands to Ints.
+      const expRev = {
+        'multiply': exp * 2, // When multiplying nums w/exponents, the exps are added. Here, return exp * 2, since the same exp was used to convert the operands to integers.
         'divide': 0, // When dividing nums w/exponents, the exps are subtracted. Here, return 0, since the same exp was used to convert the operands to integers.
-        // For addition and subtraction, just use the negative of the original exp to restore the decimal place.
-        'add': -exp, 
-        'subtract': -exp,
+        // For addition and subtraction, just use the original exp to restore the decimal place.
+        'add': exp, 
+        'subtract': exp,
       };
     
       const doCalc = (operandsArr, operatorStr) => {
@@ -135,7 +135,7 @@ class Calculator extends Component {
         }
         else {
           // Do the calculation and restore the proper decimal place if needed.
-          result = doCalc(operandsAsInts, operator) * Math.pow(10, expNeg[operator]);
+          result = doCalc(operandsAsInts, operator) / Math.pow(10, expRev[operator]);
 
           if (keyGrp === "numChange") {
             if (this.state.isLastKeyEquals) {
