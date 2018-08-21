@@ -139,15 +139,24 @@ class Calculator extends Component {
           // Do the calculation and restore the proper decimal place if needed.
           result = doCalc(operandsAsInts, operator) / Math.pow(10, expRev[operator]);
 
+          // For fitting the result to the display
+          const fitResultToDisplay = (num, l) => {
+            let numStr = num.toString();
+            // Return early with numStr if its length <= l
+            if (numStr.length <= l) return numStr;
+            // Otherwise, make room for possible exponential notation.
+            return num.toPrecision(l - 5);
+          };
+
           if (keyGrp === "numChange") {
             if (this.state.isLastKeyEquals) {
               this.setState({
-                display: result.toString(),
+                display: fitResultToDisplay(result, maxChars),
                 operands: [result]
               });
             } else {
               this.setState({
-                display: result.toString(),
+                display: fitResultToDisplay(result, maxChars),
                 inputBuffer: [...result.toString()]
               });
             }
@@ -156,7 +165,7 @@ class Calculator extends Component {
             let nextOperator = keyId === "equals" ? operator : keyId;
             
             this.setState({
-              display: result.toString(),
+              display: fitResultToDisplay(result, maxChars),
               operands: [result],
               lastOperator: nextOperator,
             });
