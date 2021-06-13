@@ -7,7 +7,7 @@ interface CalcKeyProps {
   group: string;
   defaultClassName: string;
   clickedClassName: string;
-  handleInput(id: string, value: string, group: string): any;
+  handleInput(id: string, value: string, group: string): void;
 }
 
 class CalcKey extends React.PureComponent<
