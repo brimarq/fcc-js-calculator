@@ -32,6 +32,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #404040;
-  background: linear-gradient(30deg, #444 0%, #999 50%, #666 100%);
+  background: hsl(204, 8%, 76%);
+  background: linear-gradient(hsl(211, 29%, 24%), hsl(204, 8%, 72%));
 }
