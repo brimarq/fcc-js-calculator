@@ -1,0 +1,18 @@
+#display {
+  color: black;
+  font-family: 'Segment7Standard', sans-serif;
+  letter-spacing: 0.07em;
+  text-shadow: 1px 1px 2px #555;
+  font-size: 1.375em;
+  height: 35px;
+  max-width: 237px;
+  overflow: hidden;
+  background-color: #7e8c74;
+  border: 1px rgba(0, 0, 0, 0.7) solid;
+  border-radius: 5px;
+  line-height: 40px;
+  text-align: right;
+  padding: 0 8px 0 8px;
+  box-shadow: inset -2px 2px 3px 0px rgba(0, 0, 0, 0.5),
+    inset 1px -1px 3px 0px rgba(0, 0, 0, 0.5);
+}

@@ -1,0 +1,32 @@
+#calculator {
+  grid-area: calculator;
+  display: grid;
+  grid-template-rows: repeat(2, auto);
+  grid-template-columns: auto;
+  grid-gap: 5px;
+  padding: 20px;
+  background-color: hsl(0, 0%, 20%);
+  background-image: var(--dk-brushed-metal-linear);
+  background-size: 20% 100%;
+  border-radius: 20px;
+  box-shadow: inset -2px 2px 4px 0px rgba(255, 255, 255, 0.5),
+    inset 3px -3px 6px 0px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: inset -2px 2px 4px 0px rgba(255, 255, 255, 0.5),
+    inset 3px -3px 6px 0px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: inset -2px 2px 4px 0px rgba(255, 255, 255, 0.5),
+    inset 3px -3px 6px 0px rgba(0, 0, 0, 0.5);
+}
+
+#calcLabel {
+  display: flex;
+  margin: 5px;
+  justify-content: space-between;
+  font-size: 0.75em;
+}
+
+#keypad {
+  display: grid;
+  grid-template-rows: repeat(5, var(--calckey-size));
+  grid-template-columns: repeat(4, var(--calckey-size));
+  grid-gap: 5px;
+}
