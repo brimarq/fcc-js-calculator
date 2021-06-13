@@ -5,6 +5,8 @@
   grid-template-columns: auto;
   grid-gap: 5px;
   padding: 20px;
+  color: #eee;
+  text-shadow: 1px 1px 2px #222;
   background-color: hsl(0, 0%, 20%);
   background-image: var(--dk-brushed-metal-linear);
   background-size: 20% 100%;
