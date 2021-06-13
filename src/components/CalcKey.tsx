@@ -1,7 +1,19 @@
 import React from 'react';
 import './CalcKey.css';
 
-class CalcKey extends React.PureComponent {
+interface CalcKeyProps {
+  id: string;
+  value: string;
+  group: string;
+  defaultClassName: string;
+  clickedClassName: string;
+  handleInput(id: string, value: string, group: string): any;
+}
+
+class CalcKey extends React.PureComponent<
+  CalcKeyProps,
+  { calcKeyClassName: string }
+> {
   constructor(props) {
     super(props);
     this.state = {
