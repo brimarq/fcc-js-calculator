@@ -25,6 +25,18 @@ const calcKeys = [
   { id: 'equals', value: '=', group: 'clr-eql' },
 ];
 
+type Operand = string | number;
+
+interface CalculatorState {
+  display: string;
+  inputBuffer: string[];
+  lastInput: number;
+  lastOperator: string;
+  isLastKeyEquals: boolean;
+  isLastKeyOperator: boolean;
+  operands: Operand[];
+}
+
 const defaultCalculatorState = {
   display: '0',
   inputBuffer: [],
@@ -35,7 +47,7 @@ const defaultCalculatorState = {
   operands: [],
 };
 
-class Calculator extends React.Component {
+class Calculator extends React.Component<{}, CalculatorState> {
   constructor(props) {
     super(props);
     this.state = defaultCalculatorState;
