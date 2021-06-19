@@ -10,42 +10,6 @@ interface CalcKeyProps {
   handleInput(id: string, value: string, group: string): void;
 }
 
-// class CalcKey extends React.PureComponent<
-//   CalcKeyProps,
-//   { calcKeyClassName: string }
-// > {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       calcKeyClassName: this.props.defaultClassName,
-//     };
-//     this.handleClick = this.handleClick.bind(this);
-//     this.setCalcKeyClassName = this.setCalcKeyClassName.bind(this);
-//   }
-
-//   setCalcKeyClassName(str) {
-//     this.setState(() => ({ calcKeyClassName: str }));
-//   }
-
-//   handleClick() {
-//     this.setCalcKeyClassName(this.props.clickedClassName);
-//     setTimeout(this.setCalcKeyClassName, 50, this.props.defaultClassName);
-//     this.props.handleInput(this.props.id, this.props.value, this.props.group);
-//   }
-
-//   render() {
-//     return (
-//       <div
-//         id={this.props.id}
-//         className={this.state.calcKeyClassName}
-//         onClick={this.handleClick}
-//       >
-//         {this.props.value}
-//       </div>
-//     );
-//   }
-// }
-
 function CalcKey({
   id,
   value,
@@ -64,9 +28,15 @@ function CalcKey({
   }
 
   return (
-    <div id={id} className={calcKeyClassName} onClick={handleClick}>
+    <button
+      type="button"
+      id={id}
+      className={calcKeyClassName}
+      value={value}
+      onClick={handleClick}
+    >
       {value}
-    </div>
+    </button>
   );
 }
 

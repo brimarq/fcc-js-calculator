@@ -1,47 +1,35 @@
 .calckey {
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-  font-size: 1.2em;
+  color: white;
+  text-shadow: 1px 1px 2px #222;
   background-color: #666;
-  border: 1px black solid;
-  align-items: center;
-  line-height: var(--calckey-size);
   border-radius: 5px;
-  cursor: pointer;
-  box-shadow: inset -1px 1px 2px 0px rgba(255, 255, 255, 0.5),
-    inset 1px -1px 2px 0px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: inset -1px 1px 2px 0px rgba(255, 255, 255, 0.5),
-    inset 1px -1px 2px 0px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: inset -1px 1px 2px 0px rgba(255, 255, 255, 0.5),
-    inset 1px -1px 2px 0px rgba(0, 0, 0, 0.5);
+  font-size: 1.5em;
+  border-width: 1px;
+  border-style: outset;
+  border-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.5)
+    rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5);
 }
 
-.calckey.calckey-clicked {
-  font-size: 1.1em;
-  box-shadow: inset -2px 2px 4px 0px rgba(255, 255, 255, 0.5),
-    inset 2px -2px 4px 0px rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: inset -2px 2px 4px 0px rgba(255, 255, 255, 0.5),
-    inset 2px -2px 4px 0px rgba(0, 0, 0, 0.5);
-  -moz-box-shadow: inset -2px 2px 4px 0px rgba(255, 255, 255, 0.5),
-    inset 2px -2px 4px 0px rgba(0, 0, 0, 0.5);
+.calckey:active {
+  border-style: inset;
+  border-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.5) rgba(255, 255, 255, 0.5)
+    rgba(255, 255, 255, 0.5);
 }
 
-#zero {
+.calckey[value='0'] {
   grid-column-end: span 2;
 }
 
-#divide,
-#multiply,
-#subtract,
-#add,
-#equals {
+.calckey[value='÷'],
+.calckey[value='×'],
+.calckey[value='−'],
+.calckey[value='+'],
+.calckey[value='='] {
   background-color: #6a76a7;
 }
 
-#clear,
-#posneg,
-#percent {
-  background-color: #4444;
+.calckey[value='AC'],
+.calckey[value='+/−'],
+.calckey[value='%'] {
+  background-color: #444;
 }
