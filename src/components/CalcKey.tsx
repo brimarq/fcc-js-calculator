@@ -5,21 +5,17 @@ interface CalcKeyProps {
   id: string;
   value: string;
   group: string;
-  handleInput(id: string, value: string, group: string): void;
+  handleClick(id: string, value: string, group: string): void;
 }
 
-function CalcKey({ id, value, group, handleInput }: CalcKeyProps) {
-  function handleClick() {
-    handleInput(id, value, group);
-  }
-
+function CalcKey({ id, value, group, handleClick }: CalcKeyProps) {
   return (
     <button
       type="button"
       id={id}
       className="calckey"
       value={value}
-      onClick={handleClick}
+      onClick={() => handleClick(id, value, group)}
     >
       {value}
     </button>
