@@ -284,8 +284,6 @@ class Calculator extends React.Component<{}, CalculatorState> {
               id={calcKey.id}
               value={calcKey.value}
               group={calcKey.group}
-              defaultClassName="calckey"
-              clickedClassName="calckey calckey-clicked"
               handleInput={this.handleInput}
             />
           ))}

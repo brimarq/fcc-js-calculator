@@ -5,25 +5,11 @@ interface CalcKeyProps {
   id: string;
   value: string;
   group: string;
-  defaultClassName: string;
-  clickedClassName: string;
   handleInput(id: string, value: string, group: string): void;
 }
 
-function CalcKey({
-  id,
-  value,
-  group,
-  defaultClassName,
-  clickedClassName,
-  handleInput,
-}: CalcKeyProps) {
-  const [calcKeyClassName, setCalcKeyClassName] =
-    React.useState(defaultClassName);
-
+function CalcKey({ id, value, group, handleInput }: CalcKeyProps) {
   function handleClick() {
-    setCalcKeyClassName(clickedClassName);
-    setTimeout(setCalcKeyClassName, 50, defaultClassName);
     handleInput(id, value, group);
   }
 
@@ -31,7 +17,7 @@ function CalcKey({
     <button
       type="button"
       id={id}
-      className={calcKeyClassName}
+      className="calckey"
       value={value}
       onClick={handleClick}
     >
