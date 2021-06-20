@@ -13,8 +13,31 @@ import './Calculator.css';
 //! Pressing an operator immediately following "=" should start a new calculation that operates on the result of the previous evaluation
 //! My calculator should have several decimal places of precision when it comes to rounding (note that there is no exact standard, but you should be able to handle calculations like "2 / 7" with reasonable precision to at least 4 decimal places)
 
+interface CalculatorState {
+  operand1: string;
+  operand2: string;
+  operator: string;
+  result: string;
+}
+
+const defaultState: CalculatorState = {
+  operand1: '',
+  operand2: '',
+  operator: '',
+  result: '',
+};
+
 function Calculator() {
-  const [display, setDisplay] = React.useState('0');
+  // const [display, setDisplay] = React.useState('0');
+  const [state, setState] = React.useState(defaultState);
+
+  // const display = state.operand2
+  //   ? state.operand2
+  //   : state.operand1
+  //   ? state.operand1
+  //   : '0';
+
+  const display = state.result || state.operand2 || state.operand1 || '0';
 
   // prettier-ignore
   const keyData = [
@@ -29,22 +52,24 @@ function Calculator() {
     e.preventDefault();
     const { id, value }: { id: string; value: string } = e.target;
 
-    let input = display;
+    const currentOperand = state.operator ? 'operand2' : 'operand1';
+    let newState = { ...state };
 
     switch (id) {
       case 'clear':
-        // input = '0';
-        // break;
-        setDisplay('0');
-        // setInputBuffer([]);
-        // setOperator('');
-        return;
+        newState = defaultState;
+        break;
       case 'negate':
-        if (input === '0') return; // forbid '-0'
-        input = input.charAt(0) === '-' ? input.slice(1) : `-${input}`;
+        if (state[currentOperand] === '0') return; // forbid '-0'
+        newState[currentOperand] =
+          state[currentOperand].charAt(0) === '-'
+            ? state[currentOperand].slice(1)
+            : `-${state[currentOperand]}`;
         break;
       case 'percent':
-        input = (Number(input) / 100).toString();
+        newState[currentOperand] = (
+          Number(state[currentOperand]) / 100
+        ).toString();
         break;
       case 'equals':
         break;
@@ -52,26 +77,37 @@ function Calculator() {
       case 'subtract':
       case 'multiply':
       case 'divide':
-        // setInputBuffer(inputBuffer.concat(input));
-        // setOperator(id);
-
+        newState.operator = id;
         break;
-      default:
-        // Only one decimal point per entry
-        if (id === 'decimal' && input.includes(value)) return;
-        if (input === '-0') {
-          // no leading zero for negative values
-          input = `-${value}`;
+      default: {
+        // newState = { ...state };
+        if (id === 'decimal') {
+          // Only one decimal point per operand
+          if (state[currentOperand].includes(value)) return;
         } else {
-          input = input === '0' && value !== '.' ? value : input.concat(value);
+          newState[currentOperand] = state[currentOperand].concat(value);
         }
 
-        if (!input) {
-          // setInputBuffer(inputBuffer.concat(input));
-        }
+        // console.log(newState);
+
+        // console.log(newState);
+      }
+      // Only one decimal point per entry
+      // if (id === 'decimal' && input.includes(value)) return;
+      // if (input === '-0') {
+      // no leading zero for negative values
+      // input = `-${value}`;
+      // } else {
+      //   input = input === '0' && value !== '.' ? value : input.concat(value);
+      // }
+
+      // if (!input) {
+      //   // setInputBuffer(inputBuffer.concat(input));
+      // }
     }
 
-    return setDisplay(input);
+    console.log(newState);
+    setState(newState);
   }
 
   return (
