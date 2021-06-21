@@ -3,15 +3,8 @@ import Display from './Display';
 import CalcKey from './CalcKey';
 import './Calculator.css';
 
-// TODO: REFACTOR CLICK HANDLER AND CALCULATION LOGIC: setState in hooks have no callbacks like their counterpart in class components!
-//! Clear button returns calculator to initialized state, shows '0' on display
-//! In any order, I should be able to add, subtract, multiply and divide a chain of numbers of any length, and when I hit "=", the correct result should be shown in the element with the id of "display"
-//! When inputting numbers, my calculator should not allow a number to begin with multiple zeros.
-//! When the decimal element is clicked, a "." should append to the currently displayed value; two "." in one number should not be accepted
-//! I should be able to perform any operation (+, -, *, /) on numbers containing decimal points
-//! If 2 or more operators are entered consecutively, the operation performed should be the last operator entered (excluding the negative (-) sign.
-//! Pressing an operator immediately following "=" should start a new calculation that operates on the result of the previous evaluation
-//! My calculator should have several decimal places of precision when it comes to rounding (note that there is no exact standard, but you should be able to handle calculations like "2 / 7" with reasonable precision to at least 4 decimal places)
+// TODO: ADDRESS THE STUPIDITY OF THIS FCC TEST THAT FAILS??
+//! ✖︎ 13. If 2 or more operators are entered consecutively, the operation performed should be the last operator entered (excluding the negative (-) sign.
 
 interface CalculatorState {
   operand1: string;
@@ -28,15 +21,7 @@ const defaultState: CalculatorState = {
 };
 
 function Calculator() {
-  // const [display, setDisplay] = React.useState('0');
   const [state, setState] = React.useState(defaultState);
-
-  // const display = state.operand2
-  //   ? state.operand2
-  //   : state.operand1
-  //   ? state.operand1
-  //   : '0';
-
   const display = state.operand2 || state.operand1;
 
   // prettier-ignore
@@ -48,17 +33,16 @@ function Calculator() {
     ['zero', '0'], ['decimal','.'], ['equals','=']
   ];
 
-  function handleClick(e) {
+  function handleClick(e: React.MouseEvent): void {
     e.preventDefault();
-    const { id, value }: { id: string; value: string } = e.target;
+    const { id, value } = e.target as HTMLButtonElement;
 
     const lcd = document.querySelector('#display');
-
     const currentOperand = state.operator ? 'operand2' : 'operand1';
-    let newState = { ...state };
+    let newState: CalculatorState = { ...state };
 
-    function calculate(operand1, operand2, operator) {
-      let result;
+    function calculate(operand1: string, operand2: string, operator: string) {
+      let result: number;
       switch (operator) {
         case 'add':
           result = Number(operand1) + Number(operand2);
@@ -99,21 +83,46 @@ function Calculator() {
           Number(state[currentOperand]) / 100
         ).toString();
         break;
-      case 'equals':
-        newState.operand1 = calculate(
-          state.operand1,
-          state.operand2,
-          state.operator
-        );
-        newState.operand2 = '';
-        newState.operator = '';
+      case 'equals': {
+        const { operand1, operand2, operator } = state;
+        const result = calculate(operand1, operand2, operator);
+        newState = {
+          ...state,
+          operand1: result,
+          operand2: '',
+          operator: '',
+        };
         break;
+      }
       case 'add':
       case 'subtract':
       case 'multiply':
-      case 'divide':
+      case 'divide': {
+        const { operand1, operand2, operator } = state;
+
+        if (operand2) {
+          const result = calculate(operand1, operand2, operator);
+          newState.operand1 = result;
+          newState.operand2 = '';
+        }
         newState.operator = id;
+
+        //! Tried to fix fCC Test Suite #13 error with this, but it threw 2 more errors (#9 & #13)
+        // if (operator && id === 'subtract') {
+        //   newState[currentOperand] =
+        //     newState[currentOperand].charAt(0) === '-'
+        //       ? newState[currentOperand].slice(1)
+        //       : `-${newState[currentOperand]}`;
+        // } else {
+        //   if (operand2) {
+        //     const result = calculate(operand1, operand2, operator);
+        //     newState.operand1 = result;
+        //     newState.operand2 = '';
+        //   }
+        //   newState.operator = id;
+        // }
         break;
+      }
       default: {
         // Only one decimal point per operand
         if (id === 'decimal' && state[currentOperand].includes(value)) return;
