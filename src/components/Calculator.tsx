@@ -21,7 +21,7 @@ interface CalculatorState {
 }
 
 const defaultState: CalculatorState = {
-  operand1: '',
+  operand1: '0',
   operand2: '',
   operator: '',
   result: '',
@@ -37,7 +37,7 @@ function Calculator() {
   //   ? state.operand1
   //   : '0';
 
-  const display = state.result || state.operand2 || state.operand1 || '0';
+  const display = state.result || state.operand2 || state.operand1;
 
   // prettier-ignore
   const keyData = [
@@ -80,17 +80,14 @@ function Calculator() {
         newState.operator = id;
         break;
       default: {
-        // newState = { ...state };
-        if (id === 'decimal') {
-          // Only one decimal point per operand
-          if (state[currentOperand].includes(value)) return;
-        } else {
-          newState[currentOperand] = state[currentOperand].concat(value);
-        }
+        // Only one decimal point per operand
+        if (id === 'decimal' && state[currentOperand].includes(value)) return;
 
-        // console.log(newState);
-
-        // console.log(newState);
+        // No leading zeroes for integers
+        newState[currentOperand] =
+          id !== 'decimal' && state[currentOperand] === '0'
+            ? value
+            : state[currentOperand].concat(value);
       }
       // Only one decimal point per entry
       // if (id === 'decimal' && input.includes(value)) return;
