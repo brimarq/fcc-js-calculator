@@ -17,14 +17,14 @@ interface CalculatorState {
   operand1: string;
   operand2: string;
   operator: string;
-  result: string;
+  stack: string[];
 }
 
 const defaultState: CalculatorState = {
   operand1: '0',
   operand2: '',
   operator: '',
-  result: '',
+  stack: [],
 };
 
 function Calculator() {
@@ -37,7 +37,7 @@ function Calculator() {
   //   ? state.operand1
   //   : '0';
 
-  const display = state.result || state.operand2 || state.operand1;
+  const display = state.operand2 || state.operand1;
 
   // prettier-ignore
   const keyData = [
@@ -52,19 +52,47 @@ function Calculator() {
     e.preventDefault();
     const { id, value }: { id: string; value: string } = e.target;
 
+    const lcd = document.querySelector('#display');
+
     const currentOperand = state.operator ? 'operand2' : 'operand1';
     let newState = { ...state };
+
+    function calculate(operand1, operand2, operator) {
+      let result;
+      switch (operator) {
+        case 'add':
+          result = Number(operand1) + Number(operand2);
+          break;
+        case 'subtract':
+          result = Number(operand1) - Number(operand2);
+          break;
+        case 'multiply':
+          result = Number(operand1) * Number(operand2);
+          break;
+        case 'divide':
+          result = Number(operand1) / Number(operand2);
+      }
+
+      return result.toString();
+    }
+
+    // Clear div-by-0 'Err' from display if present
+    if (value !== '0' && lcd.classList.contains('err')) {
+      lcd.classList.toggle('err');
+    }
 
     switch (id) {
       case 'clear':
         newState = defaultState;
         break;
       case 'negate':
-        if (state[currentOperand] === '0') return; // forbid '-0'
+        if (state[currentOperand] === '0') {
+          newState[currentOperand] = '';
+        } // forbid '-0'
         newState[currentOperand] =
-          state[currentOperand].charAt(0) === '-'
-            ? state[currentOperand].slice(1)
-            : `-${state[currentOperand]}`;
+          newState[currentOperand].charAt(0) === '-'
+            ? newState[currentOperand].slice(1)
+            : `-${newState[currentOperand]}`;
         break;
       case 'percent':
         newState[currentOperand] = (
@@ -72,6 +100,13 @@ function Calculator() {
         ).toString();
         break;
       case 'equals':
+        newState.operand1 = calculate(
+          state.operand1,
+          state.operand2,
+          state.operator
+        );
+        newState.operand2 = '';
+        newState.operator = '';
         break;
       case 'add':
       case 'subtract':
@@ -82,25 +117,17 @@ function Calculator() {
       default: {
         // Only one decimal point per operand
         if (id === 'decimal' && state[currentOperand].includes(value)) return;
-
+        // Forbid div by zero
+        if (value === '0' && state.operator === 'divide') {
+          lcd.classList.toggle('err');
+          return;
+        }
         // No leading zeroes for integers
         newState[currentOperand] =
           id !== 'decimal' && state[currentOperand] === '0'
             ? value
             : state[currentOperand].concat(value);
       }
-      // Only one decimal point per entry
-      // if (id === 'decimal' && input.includes(value)) return;
-      // if (input === '-0') {
-      // no leading zero for negative values
-      // input = `-${value}`;
-      // } else {
-      //   input = input === '0' && value !== '.' ? value : input.concat(value);
-      // }
-
-      // if (!input) {
-      //   // setInputBuffer(inputBuffer.concat(input));
-      // }
     }
 
     console.log(newState);
