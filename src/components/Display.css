@@ -1,6 +1,8 @@
 #display {
   color: black;
   font-family: 'Segment7Standard', sans-serif;
+  font-weight: normal;
+  font-style: italic;
   letter-spacing: 0.07em;
   text-shadow: 1px 1px 2px #555;
   font-size: 1.375em;
