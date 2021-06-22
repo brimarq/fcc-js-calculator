@@ -1,9 +1,11 @@
 .calckey {
   color: white;
   text-shadow: 1px 1px 2px #222;
+  white-space: nowrap;
+  padding: 0;
   background-color: #666;
   border-radius: 5px;
-  font-size: 1.5em;
+  font-size: 1.2em;
   border-width: 2px;
   border-style: outset;
   border-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.5)
@@ -18,7 +20,7 @@
 
 .calckey:hover {
   border-width: 1px;
-  font-size: 1.4em;
+  font-size: 1.1em;
   cursor: pointer;
 }
 
