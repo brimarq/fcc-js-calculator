@@ -86,9 +86,7 @@ function Calculator() {
           nextState.operand1 = result;
         }
         currentOperand = getCurrentOperand(nextState.operator);
-        if (nextState[currentOperand] === '0') {
-          nextState[currentOperand] = '';
-        } // forbid '-0'
+        if (nextState[currentOperand] === '0') return; // forbid '-0'
 
         nextState[currentOperand] =
           nextState[currentOperand].charAt(0) === '-'
