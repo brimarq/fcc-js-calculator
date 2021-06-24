@@ -3,9 +3,6 @@ import Display from './Display';
 import CalcKey from './CalcKey';
 import './Calculator.css';
 
-// TODO: ADDRESS THE STUPIDITY OF THIS FCC TEST THAT FAILS??
-//! ✖︎ 13. If 2 or more operators are entered consecutively, the operation performed should be the last operator entered (excluding the negative (-) sign.
-
 interface CalculatorState {
   operand1: string;
   operand2: string;
@@ -161,7 +158,6 @@ function Calculator() {
       }
     }
 
-    console.log(nextState);
     setState(nextState);
   }
 
