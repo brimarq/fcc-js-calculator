@@ -105,7 +105,7 @@ function Calculator() {
         }
         currentOperand = getCurrentOperand(nextState.operator);
         nextState[currentOperand] = (
-          Number(state[currentOperand]) / 100
+          Number(nextState[currentOperand]) / 100
         ).toString();
         break;
       }
@@ -139,7 +139,6 @@ function Calculator() {
         // If after equation result, reset state
         nextState = result ? { ...defaultState } : { ...state };
         currentOperand = getCurrentOperand(nextState.operator);
-        console.log(`CURRENT_OPERAND: `, currentOperand);
 
         // Only one decimal point per operand
         if (id === 'decimal' && nextState[currentOperand].includes(value))
@@ -154,10 +153,10 @@ function Calculator() {
           id !== 'decimal' && nextState[currentOperand] === '0'
             ? value
             : nextState[currentOperand].concat(value);
-        // nextState = handleInputKey(id, value, state);
       }
     }
 
+    console.log(nextState);
     setState(nextState);
   }
 
